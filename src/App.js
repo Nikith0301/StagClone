@@ -13,7 +13,7 @@ import Table from './components/Table';
     <>
       {/* <Area/> */}
 <Spreadsheet/>
-{/* <Table/> */}
+<Table/>
 
 
     </>

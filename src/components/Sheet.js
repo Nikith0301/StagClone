@@ -105,8 +105,11 @@ function Sheet() {
   };
 
   const AddCol = () => {
-    const newCol = "";
-    const updatedCols = [...cols, newCol];
+    const newColValue = ""; // Default value for the new column
+    const updatedCols = cols.map((col, index) => {
+      // Create a new array for each existing column, adding the new value at the end
+      return [...col, newColValue];
+    });
     setCols(updatedCols);
   };
 
