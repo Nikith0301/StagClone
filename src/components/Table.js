@@ -107,10 +107,30 @@ function AddRow(){
   
 }
 
+async function Fetch(){
+
+  try {
+    const response = await fetch('http://localhost:5000/data'); // Replace "/api/data" with your actual endpoint
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const info = await response.json();
+    console.log( info);
+    setData(info)
+    Wrap(info)
+   
+} catch (error) {
+    console.error('Error fetching data:', error);
+   
+}
+
+
+console.log('This id fetch');
+}
 
   return (
     <div>
-        <button onClick={()=>Wrap(arr)}>Click here</button>
+        <button onClick={()=>Fetch()}>Fetch</button>
         <button onClick={()=>AddRow()}>AddRow</button>
         <button onClick={()=>addColumn()}>AddColumn</button>
         <table className="table table-success  table-bordered">
