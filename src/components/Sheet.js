@@ -1,164 +1,153 @@
-// const http=require('http')
-// const fs=require('fs')
-// const mongoose=require('mongoose')
-
-// import React,{useState} from 'react'
-// import Spreadsheet from "react-spreadsheet";
-// export default function Sheet() {
-
-//   // const [data, setData] = useState([
-//   //   [{ value: "Vanilla" }, { value: "Chocolate" }, { value: "" }],
-//   //   [{ value: "Strawberry" }, { value: "Cookies" }, { value: "" }],
-//   // ]);
 
 
-//   const [data,setData]=  useState([ [{value:""},{value:""},{value:""},{value:""} ] ])  ;
-// const [cols,setLable]=useState(["sno","name","age","phone","luffy"])
-
-// function handleClick(){
-//   const newRow=[[{value:""},{value:""},{value:""},{value:""} ]];
-//   const updatedRow=[...data,newRow];
-//   setData(updatedRow);
-// }
-
-// function AddCol(){
-//   const newCol=[""]
-//   const updatedCols=[...cols,newCol]
-//   setLable(updatedCols);
-// }
-
-// function Save(){
-//   //store in mongo db
-
-//   const mySchema=new mongoose.Schema({sno:Number,name:String,Age:Number});
-//   const mydocument=mongoose.model(collecname,mySchema);
-//   const obj=new mydocument({sno:77,name:"alloo",Age:67 })
-//   //save the obj
-//   await.obj()
-
-//   //find the document
-//   const allDoc=mydocument.find()
-//   for(e of allDoc){
-//     console.log(e);
-//   }
-// }
-  
-//   return (
-// <>
-// <button onClick={handleClick}>Add row</button>
-// <button onClick={AddCol}>Add Cols</button>
-// <button onClick={Save}>Save</button>
-
-//     <div><Spreadsheet 
-//     data={data}
-//     onChange={setData}
-//     columnLabels={cols}
-
-//     // onSelectCell={handleCellClick}
-//     /></div>
-     
-// </>
-
-//   )
-// }
+import React, { useState } from 'react';
+import Spreadsheet from 'react-spreadsheet';
 
 
-
-
-
-
-
-
-import React, { useState, useEffect } from 'react';
-import Spreadsheet from "react-spreadsheet";
-import mongoose from 'mongoose'; // Assuming correct import path for Mongoose
 
 const INITIAL_DATA = [
-  [{ value: "" }, { value: "" }, { value: "" }, { value: "" }, { value: "" }],
-  [{ value: "" }, { value: "" }, { value: "" }, { value: "" }, { value: "" }],
+  [{ value: '' }, { value: '' }, { value: '' }, { value: '' }, { value: '' }],
+  [{ value: '' }, { value: '' }, { value: '' }, { value: '' }, { value: '' }],
 ];
 
-const INITIAL_COLS = ["sno", "name", "age", "phone", "luffy"];
-
-function Sheet() {
+export default function Sheet() {
   const [data, setData] = useState(INITIAL_DATA);
-  const [cols, setCols] = useState(INITIAL_COLS);
+  const [table, setTable] = useState(INITIAL_DATA);
+  const [csv, setCsv] = useState(
+    'Name,Age,City\nAlice,30,New York\nBob,25,London\nCharlie,40,Paris'
+  );
 
-  // Connect to MongoDB on component mount (using useEffect)
-  useEffect(() => {
-    const connectToDb = async () => {
-      try {
-        await mongoose.connect('mongodb://localhost:27017/Testdb');
-        console.log('Connected to MongoDB');
-      } catch (error) {
-        console.error('Error connecting to MongoDB:', error);
+  function CsvToArrobj(s) {
+    let finalObjArray = [];
+    let rows = s.split('\n');
+   
+    for (let row of rows) {
+      let val = row.split(',');
+      let temp = [];
+      for (let e of val) {
+        temp.push({ value: e });
       }
-    };
+      finalObjArray.push(temp);
+    }
+    // console.log(finalObjArray);
+    return finalObjArray
+    // setData(finalObjArray);
+  }
 
-    connectToDb();
-  }, []); // Empty dependency array to run only once on mount
-
-  const handleClick = () => {
-    const newRow = [{ value: "" }, { value: "" }, { value: "" }, { value: "" }, { value: "" }];
-    const updatedRow = [...data, newRow];
-    setData(updatedRow);
-  };
-
-  const AddCol = () => {
-    const newColValue = ""; // Default value for the new column
-    const updatedCols = cols.map((col, index) => {
-      // Create a new array for each existing column, adding the new value at the end
-      return [...col, newColValue];
-    });
-    setCols(updatedCols);
-  };
-
-  const Save = async () => {
-    if (!mongoose.connection.readyState) {
-      console.error('Not connected to MongoDB yet. Please wait for connection.');
-      return;
+  function ArrobjToCsv(ob) {
+    let csv = '';
+    for (let row of ob) {
+      let line = row.map(cell => cell.value).join(',');
+      csv += line + '\n';
+    }
+    return csv;
+    setCsv(csv);
+  }
+  function ArrayToObjArr(ar){
+  
+    let objArr=[]
+    for (let row of ar){
+      let temp=[];
+      for (let e of row){
+        temp.push({value:e})
+      }
+      objArr.push(temp);
+      // console.log(row);
+    }
+    return objArr;
     }
 
-    const mySchema = new mongoose.Schema({
-      sno: Number,
-      name: String,
-      age: Number,
-    });
+  function handleClick() {
+    const newData = [...data, [{ value: '' }, { value: '' }, { value: '' }, { value: '' }, { value: '' }]];
+    setData(newData);
+  }
 
-    const MyModel = mongoose.model('YourCollectionName', mySchema); // Replace 'YourCollectionName' with your desired collection name
+  function AddCol() {
+    const newData = data.map(row => [...row, { value: '' }]);
+    setData(newData);
+  }
 
-    for (const row of data) {
-      const newData = {
-        sno: parseInt(row[0].value, 10) || null, // Parse sno to Number with null fallback
-        name: row[1].value,
-        age: parseInt(row[2].value, 10) || null, // Parse age to Number with null fallback
-      };
+  function Trail(){
+    let c= 'Name,Age,City\nAlice,30,New York\nBob,25,London\nCharlie,40,Paris';
+    let o=CsvToArrobj(c);
+    console.log(o)
+    // setTable(o);
+    setData(o);
 
-      try {
-        const newDocument = new MyModel(newData);
-        await newDocument.save();
-        console.log('Document saved successfully:', newData);
-      } catch (error) {
-        console.error('Error saving document:', error);
+  }
+  
+
+  async function Save() {
+    try {
+      // Prepare data in JSON format
+      const jsonData = { text: ArrobjToCsv(data) };
+  console.log(jsonData)
+
+
+      // Fetch API with POST method and JSON body
+      const response = await fetch('http://localhost:5000/db_post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(jsonData),
+        // body:jsonData,
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+  
+      console.log("Data sent successfully!");
+  
+    } catch (error) {
+      console.error('Error sending data:', error);
+    } finally {
+      // Disconnect from the database gracefully (if applicable)
     }
-  };
+  }
+  
+
+
+  async function Fetch(){
+
+    try {
+      const response = await fetch('http://localhost:5000/data'); // Replace "/api/data" with your actual endpoint
+      if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      let info = await response.json();
+    
+      console.log( info);
+      let s=ArrayToObjArr(info);
+    
+
+      setData(s)
+      
+     
+  } catch (error) {
+      console.error('Error fetching data:', error);
+     
+  }
+  
+  
+  console.log('This is fetch');
+  }
+
 
   return (
     <>
       <button onClick={handleClick}>Add row</button>
       <button onClick={AddCol}>Add Cols</button>
-      <button onClick={Save}>Save</button>
-
+      <button onClick={Trail}>trail here</button>
+      {/* <button onClick={Convict}>concert to csv here</button> */}
+      <button onClick={Fetch}>fetch data</button>
+      <button onClick={Save}>Save data</button>
       <div>
         <Spreadsheet
           data={data}
           onChange={setData}
-          columnLabels={cols}
+          // columnLabels={cols}
         />
       </div>
     </>
   );
 }
-
-export default Sheet;
